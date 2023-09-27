@@ -7,6 +7,7 @@ height = 600
 open_canvas(width, height)
 grass = load_image('grass.png')
 charimg = load_image('Zelda.png')
+back = load_image('TUK_GROUND.png')
 
 move_speed = 5
 
@@ -20,23 +21,47 @@ class Character:
     def __init__(self):
         self.x = 400
         self.y = 300
-        self.move = False
-        self.Direction = 3
+        self.moveOn = True
+        self.Direction = Dir.Down
     def move(self):
-        if self.Direction == Left:
-            if self.x > move_speed:
+        if self.Direction == Dir.Left:
+            if self.x > 30:
                 self.x = self.x - move_speed
-        elif self.Direction == Right:
+        elif self.Direction == Dir.Right:
             if self.x < width - move_speed:
                 self.x = self.x + move_speed
-        elif self.Direction == Up:
+        elif self.Direction == Dir.Up:
             if self.y > move_speed:
                 self.y = self.y + move_speed
-        elif self.Direction == Down:
+        elif self.Direction == Dir.Down:
             if self.y < height:
                 self.y = self.y - move_speed
-    def Draw(self):   
-        charimg.clip_draw(0, 0, 100, 100, self.x, self.y)
+    def Draw(self, frame):  
+        if self.moveOn == True:
+            if self.Direction == Dir.Right:
+                charimg.clip_draw(frame * 120, 0, 120, 130, 400, 400)
+            elif self.Direction == Dir.Left:
+                charimg.clip_draw(frame * 120, 260, 120, 130, 400, 400)
+            elif self.Direction == Dir.Up:
+                charimg.clip_draw(frame * 120, 130, 120, 130, 400, 400)
+            elif self.Direction == Dir.Down:
+                charimg.clip_draw(frame * 120, 390, 120, 130, 400, 400)
+        else:
+            if(frame < 7):
+                frame_stop = 0
+            elif frame < 9:
+                frame_stop = 1
+            else:
+                frame_stop = 2
+            if self.Direction == Dir.Right:
+                charimg.clip_draw(frame_stop * 120, 0 + 520, 120, 130, 400, 400)
+            elif self.Direction == Dir.Left:
+                charimg.clip_draw(frame_stop * 120, 260 + 520 , 120, 130, 400, 400)
+            elif self.Direction == Dir.Up:
+                charimg.clip_draw(frame_stop * 120, 130 + 520, 120, 130, 400, 400)
+            elif self.Direction == Dir.Down:
+                charimg.clip_draw(frame_stop * 120, 390 + 520, 120, 130, 400, 400)
+            
 
 global character
 character = Character()
@@ -49,28 +74,28 @@ def handle_events():
             running = False  
         elif event.type == SDL_KEYDOWN:
             if event.type == SDLK_ESCAPE:
-                running = False;    
+                running = False    
             elif event.type == SDLK_LEFT:
-                character.move = True
-                character.Direction = Left
+                character.moveOn = True
+                character.Direction = Dir.Left
             elif event.type == SDLK_RIGHT:
-                character.move = True
-                character.Direction = Right
+                character.moveOn = True
+                character.Direction = Dir.Right
             elif event.type == SDLK_UP:
-                character.move = True
-                character.Direction = Up
+                character.moveOn = True
+                character.Direction = Dir.Up
             elif event.type == SDLK_DOWN:
-                character.move = True
-                character.Direction = Down
+                character.moveOn = True
+                character.Direction = Dir.Down
         elif event.type == SDL_KEYUP:
             if event.type == SDLK_LEFT:
-                character.move = False
+                character.moveOn = False
             elif event.type == SDLK_RIGHT:
-                character.move = False
+                character.moveOn = False
             elif event.type == SDLK_UP:
-                character.move = False
+                character.moveOn = False
             elif event.type == SDLK_DOWN:
-                character.move = False
+                character.moveOn = False
 
 
 running = True
@@ -79,12 +104,19 @@ y = 600 // 2
 frame = 0
 
 while running:
-    update_canvas()
+    clear_canvas()     
+    back.draw(0, 0)
     handle_events()
-    if(character.move == True):
+    character.move()
+    if(character.moveOn == True):
         character.move()
-    character.Draw()
-    delay(0.1)
+    character.Draw(frame)
+    if character.moveOn == True:
+        delay(0.1)
+    elif character.moveOn == False:
+        delay(0.4)
+    frame = (frame + 1) % 10
+    update_canvas()
 
 close_canvas()
 
