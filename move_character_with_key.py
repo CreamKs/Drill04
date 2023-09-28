@@ -9,7 +9,7 @@ grass = load_image('grass.png')
 charimg = load_image('Zelda.png')
 back = load_image('TUK_GROUND.png')
 
-move_speed = 5
+move_speed = 10
 
 class Dir(Enum):
     Left = 0
@@ -21,46 +21,46 @@ class Character:
     def __init__(self):
         self.x = 400
         self.y = 300
-        self.moveOn = True
-        self.Direction = Dir.Down
+        self.moveOn = False
+        self.Direction = Dir.Right
     def move(self):
         if self.Direction == Dir.Left:
             if self.x > 30:
                 self.x = self.x - move_speed
         elif self.Direction == Dir.Right:
-            if self.x < width - move_speed:
+            if self.x < width - 30:
                 self.x = self.x + move_speed
         elif self.Direction == Dir.Up:
-            if self.y > move_speed:
+            if self.y < height - 30:
                 self.y = self.y + move_speed
         elif self.Direction == Dir.Down:
-            if self.y < height:
+            if self.y > 30:
                 self.y = self.y - move_speed
     def Draw(self, frame):  
         if self.moveOn == True:
             if self.Direction == Dir.Right:
-                charimg.clip_draw(frame * 120, 0, 120, 130, 400, 400)
+                charimg.clip_draw(frame * 120, 0, 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Left:
-                charimg.clip_draw(frame * 120, 260, 120, 130, 400, 400)
+                charimg.clip_draw(frame * 120, 260, 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Up:
-                charimg.clip_draw(frame * 120, 130, 120, 130, 400, 400)
+                charimg.clip_draw(frame * 120, 130, 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Down:
-                charimg.clip_draw(frame * 120, 390, 120, 130, 400, 400)
+                charimg.clip_draw(frame * 120, 390, 120, 130, self.x, self.y, 60, 60)
         else:
             if(frame < 7):
                 frame_stop = 0
-            elif frame < 9:
+            elif frame < 8:
                 frame_stop = 1
             else:
                 frame_stop = 2
             if self.Direction == Dir.Right:
-                charimg.clip_draw(frame_stop * 120, 0 + 520, 120, 130, 400, 400)
+                charimg.clip_draw(frame_stop * 120, 0 + 520, 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Left:
-                charimg.clip_draw(frame_stop * 120, 260 + 520 , 120, 130, 400, 400)
+                charimg.clip_draw(frame_stop * 120, 260 + 520 , 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Up:
-                charimg.clip_draw(frame_stop * 120, 130 + 520, 120, 130, 400, 400)
+                charimg.clip_draw(frame_stop * 120, 130 + 520, 120, 130, self.x, self.y, 60, 60)
             elif self.Direction == Dir.Down:
-                charimg.clip_draw(frame_stop * 120, 390 + 520, 120, 130, 400, 400)
+                charimg.clip_draw(frame_stop * 120, 390 + 520, 120, 130, self.x, self.y, 60, 60)
             
 
 global character
@@ -73,28 +73,28 @@ def handle_events():
         if event.type == SDL_QUIT:
             running = False  
         elif event.type == SDL_KEYDOWN:
-            if event.type == SDLK_ESCAPE:
+            if event.key == SDLK_ESCAPE:
                 running = False    
-            elif event.type == SDLK_LEFT:
+            elif event.key == SDLK_LEFT:
                 character.moveOn = True
                 character.Direction = Dir.Left
-            elif event.type == SDLK_RIGHT:
+            elif event.key == SDLK_RIGHT:
                 character.moveOn = True
                 character.Direction = Dir.Right
-            elif event.type == SDLK_UP:
+            elif event.key == SDLK_UP:
                 character.moveOn = True
                 character.Direction = Dir.Up
-            elif event.type == SDLK_DOWN:
+            elif event.key == SDLK_DOWN:
                 character.moveOn = True
                 character.Direction = Dir.Down
         elif event.type == SDL_KEYUP:
-            if event.type == SDLK_LEFT:
+            if event.key == SDLK_LEFT:
                 character.moveOn = False
-            elif event.type == SDLK_RIGHT:
+            elif event.key == SDLK_RIGHT:
                 character.moveOn = False
-            elif event.type == SDLK_UP:
+            elif event.key == SDLK_UP:
                 character.moveOn = False
-            elif event.type == SDLK_DOWN:
+            elif event.key == SDLK_DOWN:
                 character.moveOn = False
 
 
@@ -105,9 +105,8 @@ frame = 0
 
 while running:
     clear_canvas()     
-    back.draw(0, 0)
+    back.draw(400, 300)
     handle_events()
-    character.move()
     if(character.moveOn == True):
         character.move()
     character.Draw(frame)
